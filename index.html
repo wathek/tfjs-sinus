@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.11.7"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+	</head>
+	<body>
+		<canvas id="myChart"></canvas>
+		<script>
+			// Creating a simple FeedForward Model
+			let model = tf.sequential();
+			model.add(tf.layers.dense({units: 40, inputShape:[1], activation: "tanh"}));
+			model.add(tf.layers.dense({units: 12, activation: "tanh"}));
+			model.add(tf.layers.dense({units: 1}));
+
+			model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+
+			// Generating data
+			let xs = [];
+			for (let x=0; x<200; x++) {
+				xs.push(x / 50);
+			}
+
+			let ys = xs.map(x => Math.sin(x));
+
+			// Retrieving the canvas to create the chart
+			let ctx = document.getElementById('myChart').getContext('2d');
+
+			// Training model
+			model.fit(tf.tensor2d(xs, [xs.length, 1]), tf.tensor2d(ys, [ys.length, 1]), {epochs: 1000}).then(function() {
+				console.log("Model trained and ready to predict");
+
+				// Charting
+				let chart = new Chart(ctx, {
+					type: 'line',
+
+					data: {
+						labels: xs,
+						datasets: [{
+							label: "Prediction",
+							backgroundColor: 'rgba(255, 99, 132, 0.6)',
+							borderColor: 'rgba(255, 99, 132, 1)',
+							data: model.predict(tf.tensor2d(xs, [xs.length, 1])).dataSync(),
+						}, {
+							label: "Real",
+							backgroundColor: 'rgb(128,222,234)',
+							borderColor: 'rgb(128,222,234)',
+							data: ys,
+						}]
+					},
+				});
+			});
+
+		</script>
+	</body>
+</html>
