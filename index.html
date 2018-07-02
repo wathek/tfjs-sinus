@@ -13,7 +13,7 @@
 			model.add(tf.layers.dense({units: 12, activation: "tanh"}));
 			model.add(tf.layers.dense({units: 1}));
 
-			model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+			model.compile({loss: 'meanSquaredError', optimizer: 'adam'});
 
 			// Generating data
 			let xs = [];
@@ -27,7 +27,7 @@
 			let ctx = document.getElementById('myChart').getContext('2d');
 
 			// Training model
-			model.fit(tf.tensor2d(xs, [xs.length, 1]), tf.tensor2d(ys, [ys.length, 1]), {epochs: 1000}).then(function() {
+			model.fit(tf.tensor2d(xs, [xs.length, 1]), tf.tensor2d(ys, [ys.length, 1]), {epochs: 150}).then(function() {
 				console.log("Model trained and ready to predict");
 
 				// Charting
